@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>The Art of Toast</title>
   <link rel="icon" type="image/svg+xml" href="/vite.svg"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
@@ -20,6 +21,35 @@
 </div>
 <!-- partial:index.partial.html -->
 <canvas id="matter-canvas"></canvas>
+
+<div id="touch-controls">
+  <!-- P1: top strip. HTML order [rotate|dpad] → after rotate(180deg) P1 sees [dpad|rotate] ✓ -->
+  <div class="ctrl-strip ctrl-strip--p1">
+    <div class="ctrl-rotate">
+      <button class="ctrl-btn" data-player="0" data-action="counterClockwise">↺</button>
+      <button class="ctrl-btn" data-player="0" data-action="clockwise">↻</button>
+    </div>
+    <div class="ctrl-dpad">
+      <button class="ctrl-btn ctrl-up"    data-player="0" data-action="down">↑</button>
+      <button class="ctrl-btn ctrl-left"  data-player="0" data-action="right">←</button>
+      <button class="ctrl-btn ctrl-right" data-player="0" data-action="left">→</button>
+      <button class="ctrl-btn ctrl-down"  data-player="0" data-action="up">↓</button>
+    </div>
+  </div>
+  <!-- P2: bottom strip, normal orientation -->
+  <div class="ctrl-strip ctrl-strip--p2">
+    <div class="ctrl-dpad">
+      <button class="ctrl-btn ctrl-up"    data-player="1" data-action="up">↑</button>
+      <button class="ctrl-btn ctrl-left"  data-player="1" data-action="left">←</button>
+      <button class="ctrl-btn ctrl-right" data-player="1" data-action="right">→</button>
+      <button class="ctrl-btn ctrl-down"  data-player="1" data-action="down">↓</button>
+    </div>
+    <div class="ctrl-rotate">
+      <button class="ctrl-btn" data-player="1" data-action="counterClockwise">↺</button>
+      <button class="ctrl-btn" data-player="1" data-action="clockwise">↻</button>
+    </div>
+  </div>
+</div>
 
 <svg>
   <defs>

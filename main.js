@@ -98,9 +98,11 @@ function startGame(config) {
   init()
   resizeFilter()
 
+  const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0
+  // On touch devices, cups start at 50% height to avoid being hidden under control strips
   const x0 = innerWidth  * 0.3
   const x1 = innerWidth  * 0.7
-  const y  = innerHeight * 0.8
+  const y  = isTouch ? innerHeight * 0.5 : innerHeight * 0.8
   const pos0 = {x: x0, y}
   const pos1 = {x: x1, y}
 
@@ -125,6 +127,8 @@ function startGame(config) {
   bindKey('l', {onPressed: () => glass1.control.down  = true,  onReleased: () => glass1.control.down  = false})
   bindKey('i', {onPressed: () => glass1.control.counterClockwise = true,  onReleased: () => glass1.control.counterClockwise = false})
   bindKey('p', {onPressed: () => glass1.control.clockwise        = true,  onReleased: () => glass1.control.clockwise        = false})
+
+  if (isTouch) setupTouchControls()
 
   Events.on(runner, 'tick', () => {
     if (gameOver) return
@@ -188,6 +192,27 @@ function resizeFilter() {
   const index = innerWidth < 600 ? 0 : 1
   feGaussianBlur.setAttribute('stdDeviation', stdDeviation[index])
   feColorMatrix.setAttribute('values', `1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 ${colorMatrix[index]}`)
+}
+
+function setupTouchControls() {
+  document.getElementById('touch-controls').style.display = 'block'
+
+  document.querySelectorAll('.ctrl-btn').forEach(btn => {
+    const action = btn.dataset.action
+    const getGlass = () => btn.dataset.player === '0' ? glass0 : glass1
+
+    btn.addEventListener('touchstart', e => {
+      e.preventDefault()
+      getGlass().control[action] = true
+    }, {passive: false})
+
+    const release = e => {
+      e?.preventDefault()
+      getGlass().control[action] = false
+    }
+    btn.addEventListener('touchend',    release, {passive: false})
+    btn.addEventListener('touchcancel', release)
+  })
 }
 
 function randomNumBetween(min, max) {
