@@ -8,6 +8,16 @@
   <link rel="stylesheet" href="./style.css">
 </head>
 <body>
+<div id="start-screen">
+  <h1 class="start-title">敬酒模拟器</h1>
+  <p class="start-subtitle">选择难度开始游戏</p>
+  <div class="diff-buttons">
+    <button class="button diff-btn" data-diff="easy">简单</button>
+    <button class="button diff-btn" data-diff="normal">普通</button>
+    <button class="button diff-btn" data-diff="hard">困难</button>
+  </div>
+  <p class="start-controls">左方：WASD移动 &nbsp; QE旋转<br>右方：OPKL移动 &nbsp; I;旋转</p>
+</div>
 <!-- partial:index.partial.html -->
 <canvas id="matter-canvas"></canvas>
 
@@ -21,6 +31,7 @@
 </svg>
 <div id="foreground">
   <h1 id="endgame"></h1>
+  <p id="endgame-reason"></p>
   <button id="restartBtn" class="button" onClick="window.location.reload();">重新开始</button>
 </div>
 <div id="background"></div>
