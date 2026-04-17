@@ -106,8 +106,8 @@ function startGame(config) {
   const pos0 = {x: x0, y}
   const pos1 = {x: x1, y}
 
-  glass0 = new Glass(pos0, engine, document.querySelector('#glass0'), false, config)
-  glass1 = new Glass(pos1, engine, document.querySelector('#glass1'), true,  config)
+  glass0 = new Glass(pos0, engine, document.querySelector('#glass0'), true, config)
+  glass1 = new Glass(pos1, engine, document.querySelector('#glass1'), false,  config)
 
   createLiquid(pos0, config.particles, circles0)
   createLiquid(pos1, config.particles, circles1)
@@ -155,9 +155,10 @@ function startGame(config) {
 
     // Cup collision: parts-level check is more precise than compound body AABB
     if (cupsCollide()) {
-      const winner = glass0.getLowestCupLipPoint() > glass1.getLowestCupLipPoint() ? 'left' : 'right'
-      const loser  = winner === 'left' ? '右' : '左'
-      triggerEndGame(winner, `${loser}方杯口最低`)
+      const isLeftLower = glass0.getLowestCupLipPoint() > glass1.getLowestCupLipPoint()
+      const winner = isLeftLower ? 'left' : 'right'
+      const lowerSide = isLeftLower ? '左' : '右'
+      triggerEndGame(winner, `${lowerSide}方杯口更低`)
     }
 
     glass0.updatePosition()

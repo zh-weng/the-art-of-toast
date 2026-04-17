@@ -72,29 +72,29 @@ export class Glass {
     Composite.add(engine.world, [this.glass])
 
     this.glassImg.style.transform = this._makeTransform(
-      this.cx + this.xCorrection, this.cy - 25, 0
+      this.glass.position.x, this.glass.position.y, 0
     )
   }
 
   // Builds the CSS transform string. Uses live innerWidth/innerHeight so resize works correctly.
-  _makeTransform = (screenX, screenY, angleDeg) => {
-    const tx = screenX - innerWidth / 2
-    const ty = screenY - innerHeight / 2
+  _makeTransform = (comX, comY, angleDeg) => {
+    const tx = comX - innerWidth / 2
+    const ty = comY - innerHeight / 2
     const mirror = this.mirrored ? ' scaleX(-1)' : ''
-    return `translate(${tx}px, ${ty}px) rotate(${angleDeg}deg)${mirror}`
+    return `translate(${tx}px, ${ty}px) rotate(${angleDeg}deg) translate(${this.xCorrection}px, -25px)${mirror}`
   }
 
   setPosition = pos => {
     Body.setPosition(this.glass, {x: pos.x, y: pos.y})
     const angleDeg = Math.floor(180 * this.glass.angle / Math.PI)
-    this.glassImg.style.transform = this._makeTransform(pos.x + this.xCorrection, pos.y - 25, angleDeg)
+    this.glassImg.style.transform = this._makeTransform(pos.x, pos.y, angleDeg)
   }
 
   setAngle = angle => {
     Body.setAngle(this.glass, angle)
     const pos = this.getPosition()
     this.glassImg.style.transform = this._makeTransform(
-      pos.x + this.xCorrection, pos.y - 25,
+      pos.x, pos.y,
       Math.floor(180 * angle / Math.PI)
     )
   }
