@@ -14,14 +14,14 @@ Object.defineProperty(globalThis, 'navigator', {value: dom.window.navigator, con
 globalThis.HTMLCanvasElement = dom.window.HTMLCanvasElement
 
 // Patch canvas getContext: 'webgl' returns a headless-gl context
-const OrigCanvas = dom.window.HTMLCanvasElement
+const origGetContext = dom.window.HTMLCanvasElement.prototype.getContext
 dom.window.HTMLCanvasElement.prototype.getContext = function (type, attrs) {
   if (type === 'webgl') {
     const ctx = createContext(800, 600, {preserveDrawingBuffer: true, alpha: true})
     ctx.canvas = this
     return ctx
   }
-  return OrigCanvas.prototype.getContext.call(this, type, attrs)
+  return origGetContext.call(this, type, attrs)
 }
 
 globalThis.requestAnimationFrame = dom.window.requestAnimationFrame
