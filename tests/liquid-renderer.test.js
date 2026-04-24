@@ -31,9 +31,18 @@ describe('LiquidRenderer', () => {
     expect(lr.canvas.height).toBe(768)
   })
 
-  it('destroy triggers WebGL context loss without throwing', () => {
+  it('destroy triggers WebGL context loss by calling loseContext', () => {
     const lr = new LiquidRenderer([1, 0, 0, 1])
-    expect(() => lr.destroy()).not.toThrow()
+    let called = false
+    const origGetExtension = lr.gl.getExtension.bind(lr.gl)
+    lr.gl.getExtension = (name) => {
+      if (name === 'WEBGL_lose_context') {
+        return { loseContext: () => { called = true } }
+      }
+      return origGetExtension(name)
+    }
+    lr.destroy()
+    expect(called).toBe(true)
   })
 
   it('render with particles clears and draws without throwing', () => {
