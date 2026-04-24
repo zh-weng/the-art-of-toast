@@ -4,9 +4,6 @@ import {bindKey, unbindKey} from '@rwh/keystrokes'
 
 const canvas = document.querySelector('#matter-canvas')
 
-const stdDeviation = [8, 10]
-const colorMatrix = ['15 -3', '30 -5']
-
 let engine, render, runner, mouse
 let circles0 = [], circles1 = []
 let glass0, glass1
@@ -96,7 +93,6 @@ function startGame(config) {
   circles1 = []
 
   init()
-  resizeFilter()
 
   const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0
   // On touch devices, cups start at 50% height to avoid being hidden under control strips
@@ -174,26 +170,15 @@ document.querySelectorAll('.diff-btn').forEach(btn => {
   })
 })
 
-resizeFilter()
-
 window.addEventListener('resize', () => {
   if (render) {
     render.canvas.width  = innerWidth
     render.canvas.height = innerHeight
   }
-  resizeFilter()
   // Reposition glass images to match new viewport size (fixes resize alignment bug)
   if (glass0) glass0.setPosition(glass0.getPosition())
   if (glass1) glass1.setPosition(glass1.getPosition())
 })
-
-function resizeFilter() {
-  const feGaussianBlur = document.querySelector('#gooey feGaussianBlur')
-  const feColorMatrix  = document.querySelector('#gooey feColorMatrix')
-  const index = innerWidth < 600 ? 0 : 1
-  feGaussianBlur.setAttribute('stdDeviation', stdDeviation[index])
-  feColorMatrix.setAttribute('values', `1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 ${colorMatrix[index]}`)
-}
 
 function setupTouchControls() {
   document.getElementById('touch-controls').style.display = 'block'
