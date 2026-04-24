@@ -23,13 +23,22 @@ if (import.meta.env.DEV) {
   requestAnimationFrame(loop)
 }
 
-let engine, render, runner, mouse
+export let engine, render, runner, mouse
 let circles0 = [], circles1 = []
-let glass0, glass1
+export let glass0, glass1
 let liquidRenderer
-let gameOver = false
+export let gameOver = false
+export function _setGlasses(g0, g1) { glass0 = g0; glass1 = g1 }
+export function _resetGameOver() { gameOver = false }
 
-function init() {
+export function clear() {
+  if (liquidRenderer) { liquidRenderer.destroy(); liquidRenderer = null }
+  if (runner)  { Runner.stop(runner);    runner = null }
+  if (render)  { Render.stop(render);    render = null }
+  if (engine)  { Engine.clear(engine);   engine = null }
+}
+
+export function init() {
   engine = Engine.create({
     constraintIterations: 10,
     positionIterations: 10
@@ -53,15 +62,14 @@ function init() {
   Runner.run(runner, engine)
 }
 
-function createLiquid(pos, num, targetArray, color = '#fff') {
+export function createLiquid(pos, num, targetArray) {
   const radius = randomNumBetween(6, 7)
   for (let i = 0; i < num; ++i) {
     const body = Bodies.circle(pos.x, pos.y, radius, {
       friction: 0,
       density: 1,
       frictionAir: 0.05,
-      restitution: 0.7,
-      render: {fillStyle: color}
+      restitution: 0.7
     })
     Body.applyForce(body, body.position, {x: 1, y: 0})
     Composite.add(engine.world, body)
@@ -71,7 +79,7 @@ function createLiquid(pos, num, targetArray, color = '#fff') {
 
 // Parts-level bounds check: more precise than compound body AABB.
 // parts[0] is the compound body itself; skip it and check individual sub-parts only.
-function cupsCollide() {
+export function cupsCollide() {
   const parts0 = glass0.glass.parts.slice(1)
   const parts1 = glass1.glass.parts.slice(1)
   for (const p0 of parts0) {
@@ -82,7 +90,7 @@ function cupsCollide() {
   return false
 }
 
-function triggerEndGame(winner, reason) {
+export function triggerEndGame(winner, reason) {
   if (gameOver) return
   gameOver = true
 
@@ -107,12 +115,12 @@ function triggerEndGame(winner, reason) {
   foreground.style.display   = 'flex'
 }
 
-function startGame(config) {
+export function startGame(config) {
   gameOver = false
   circles0 = []
   circles1 = []
 
-  init()
+  clear()
 
   const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0
   // On touch devices, cups start at 50% height to avoid being hidden under control strips
@@ -128,7 +136,6 @@ function startGame(config) {
   createLiquid(pos0, config.particles, circles0)
   createLiquid(pos1, config.particles, circles1)
 
-  if (liquidRenderer) liquidRenderer.destroy()
   liquidRenderer = new LiquidRenderer(config.color)
 
   // Player 1 controls: WASD + QE
@@ -205,7 +212,7 @@ window.addEventListener('resize', () => {
   if (glass1) glass1.setPosition(glass1.getPosition())
 })
 
-function setupTouchControls() {
+export function setupTouchControls() {
   document.getElementById('touch-controls').style.display = 'block'
 
   document.querySelectorAll('.ctrl-btn').forEach(btn => {
@@ -226,6 +233,6 @@ function setupTouchControls() {
   })
 }
 
-function randomNumBetween(min, max) {
+export function randomNumBetween(min, max) {
   return Math.random() * (max - min) + min
 }
