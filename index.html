@@ -26,6 +26,7 @@
 </div>
 <!-- partial:index.partial.html -->
 <canvas id="matter-canvas"></canvas>
+<canvas id="webgl-canvas"></canvas>
 
 <div id="touch-controls">
   <!-- P1: top strip. HTML order [rotate|dpad] → after rotate(180deg) P1 sees [dpad|rotate] ✓ -->
@@ -56,14 +57,6 @@
   </div>
 </div>
 
-<svg>
-  <defs>
-    <filter id="gooey" height="130%">
-      <feGaussianBlur in="SourceGraphic" stdDeviation="15" result="blur"/>
-      <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 40 -3" result="goo"/>
-    </filter>
-  </defs>
-</svg>
 <div id="foreground">
   <h1 id="endgame"></h1>
   <p id="endgame-reason"></p>
