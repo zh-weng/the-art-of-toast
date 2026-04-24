@@ -6,10 +6,15 @@
   "scripts": {
     "dev": "vite --host",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "devDependencies": {
-    "vite": "^4.4.5"
+    "gl": "^8.1.6",
+    "jsdom": "^29.0.2",
+    "vite": "^4.4.5",
+    "vitest": "^4.1.5"
   },
   "dependencies": {
     "@rwh/keystrokes": "^1.0.0",
