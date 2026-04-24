@@ -5,9 +5,9 @@ const VERT_SRC = `
   }
 `
 
-// MAX_PARTICLES must match the largest particle count across all difficulties (easy=120).
+// MAX_PARTICLES covers both players combined: easy=120+120=240, so 256 gives headroom.
 // Increase this constant (and nothing else) to upgrade capacity.
-const MAX_PARTICLES = 128
+const MAX_PARTICLES = 256
 
 const FRAG_SRC = `
   precision mediump float;
@@ -66,12 +66,12 @@ class ParticleUploader {
     this.countLoc = gl.getUniformLocation(prog, 'uCount')
   }
 
-  upload(particles) {
+  upload(particles, scale) {
     const { gl, locs, countLoc } = this
     const count = Math.min(particles.length, MAX_PARTICLES)
     gl.uniform1i(countLoc, count)
     for (let i = 0; i < count; i++) {
-      gl.uniform2f(locs[i], particles[i].position.x, particles[i].position.y)
+      gl.uniform2f(locs[i], particles[i].position.x * scale, particles[i].position.y * scale)
     }
   }
 }
@@ -104,8 +104,12 @@ export class LiquidRenderer {
     this.uThreshold  = gl.getUniformLocation(prog, 'uThreshold')
     this.uColor      = gl.getUniformLocation(prog, 'uColor')
 
-    gl.uniform1f(this.uRadius,    40.0)
-    gl.uniform1f(this.uThreshold,  0.6)
+    // Safari requires half-resolution rendering to maintain acceptable frame rate;
+    // other browsers run WebGL at full speed and don't need the downscale.
+    this._renderScale = /^((?!chrome|android).)*safari/i.test(navigator.userAgent) ? 0.5 : 1.0
+
+    gl.uniform1f(this.uRadius,    4.5 * this._renderScale)
+    gl.uniform1f(this.uThreshold, 0.8)
     gl.uniform4f(this.uColor, color[0], color[1], color[2], color[3])
 
     gl.enable(gl.BLEND)
@@ -116,10 +120,11 @@ export class LiquidRenderer {
 
   resize() {
     const { gl, canvas } = this
-    canvas.width  = innerWidth
-    canvas.height = innerHeight
-    gl.viewport(0, 0, innerWidth, innerHeight)
-    gl.uniform2f(this.uResolution, innerWidth, innerHeight)
+    const scale = this._renderScale
+    canvas.width  = Math.round(innerWidth  * scale)
+    canvas.height = Math.round(innerHeight * scale)
+    gl.viewport(0, 0, canvas.width, canvas.height)
+    gl.uniform2f(this.uResolution, canvas.width, canvas.height)
   }
 
   destroy() {
@@ -132,7 +137,7 @@ export class LiquidRenderer {
     gl.clearColor(0, 0, 0, 0)
     gl.clear(gl.COLOR_BUFFER_BIT)
     const all = circles0.concat(circles1)
-    this.uploader.upload(all)
+    this.uploader.upload(all, this._renderScale)
     gl.drawArrays(gl.TRIANGLES, 0, 6)
   }
 }

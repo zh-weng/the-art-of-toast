@@ -5,6 +5,24 @@ import {LiquidRenderer} from './liquid-renderer.js'
 
 const canvas = document.querySelector('#matter-canvas')
 
+if (import.meta.env.DEV) {
+  const fps = document.createElement('div')
+  fps.style.cssText = 'position:fixed;top:8px;left:8px;z-index:999;font:14px monospace;color:#fff;background:rgba(0,0,0,0.5);padding:2px 6px;border-radius:4px;pointer-events:none'
+  document.body.appendChild(fps)
+  let frames = 0, last = performance.now()
+  const loop = () => {
+    frames++
+    const now = performance.now()
+    if (now - last >= 500) {
+      fps.textContent = `${Math.round(frames * 1000 / (now - last))} fps`
+      frames = 0
+      last = now
+    }
+    requestAnimationFrame(loop)
+  }
+  requestAnimationFrame(loop)
+}
+
 let engine, render, runner, mouse
 let circles0 = [], circles1 = []
 let glass0, glass1
@@ -41,7 +59,7 @@ function createLiquid(pos, num, targetArray, color = '#fff') {
     const body = Bodies.circle(pos.x, pos.y, radius, {
       friction: 0,
       density: 1,
-      frictionAir: 0,
+      frictionAir: 0.05,
       restitution: 0.7,
       render: {fillStyle: color}
     })
