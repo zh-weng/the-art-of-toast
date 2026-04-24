@@ -9,6 +9,11 @@
   <link rel="stylesheet" href="./style.css">
 </head>
 <body>
+<div id="rotate-prompt">
+  <div class="rotate-icon">⟳</div>
+  <p>请横置手机游玩</p>
+  <p style="font-size:0.9rem;opacity:0.7">两人面对面握住手机两端</p>
+</div>
 <div id="start-screen">
   <h1 class="start-title">敬酒模拟器</h1>
   <p class="start-subtitle">选择难度开始游戏</p>
@@ -38,15 +43,15 @@
   </div>
   <!-- P2: bottom strip, normal orientation -->
   <div class="ctrl-strip ctrl-strip--p2">
+    <div class="ctrl-rotate">
+      <button class="ctrl-btn" data-player="1" data-action="counterClockwise">↺</button>
+      <button class="ctrl-btn" data-player="1" data-action="clockwise">↻</button>
+    </div>
     <div class="ctrl-dpad">
       <button class="ctrl-btn ctrl-up"    data-player="1" data-action="up">↑</button>
       <button class="ctrl-btn ctrl-left"  data-player="1" data-action="left">←</button>
       <button class="ctrl-btn ctrl-right" data-player="1" data-action="right">→</button>
       <button class="ctrl-btn ctrl-down"  data-player="1" data-action="down">↓</button>
-    </div>
-    <div class="ctrl-rotate">
-      <button class="ctrl-btn" data-player="1" data-action="counterClockwise">↺</button>
-      <button class="ctrl-btn" data-player="1" data-action="clockwise">↻</button>
     </div>
   </div>
 </div>

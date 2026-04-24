@@ -197,6 +197,37 @@ header {
   margin-bottom: 0.5rem;
 }
 
+/* ── Portrait orientation guard ──────────────────── */
+#rotate-prompt {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: #c3e6e4;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  font-family: sans-serif;
+  font-size: 1.3rem;
+  color: #2d5a59;
+  text-align: center;
+}
+
+.rotate-icon {
+  font-size: 4rem;
+  animation: spin-hint 2s ease-in-out infinite;
+}
+
+@keyframes spin-hint {
+  0%, 100% { transform: rotate(0deg); }
+  50%       { transform: rotate(90deg); }
+}
+
+@media (orientation: portrait) {
+  #rotate-prompt { display: flex; }
+}
+
 /* ── Touch controls ───────────────────────────────── */
 #touch-controls {
   display: none;
@@ -206,23 +237,26 @@ header {
   z-index: 5;
 }
 
+/* P1 on left edge, P2 on right edge — each player stands at a short side */
 .ctrl-strip {
   position: absolute;
-  left: 0; right: 0;
+  top: 0; bottom: 0;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  padding: 12px 20px;
+  justify-content: space-around;
+  padding: 20px 12px;
   pointer-events: none;
 }
 
+/* P1: left side, rotated 180° so the player holding the left edge sees controls right-side-up */
 .ctrl-strip--p1 {
-  top: 0;
+  left: 0;
   transform: rotate(180deg);
 }
 
 .ctrl-strip--p2 {
-  bottom: 0;
+  right: 0;
 }
 
 /* D-pad: cross/diamond layout via CSS grid */
@@ -231,7 +265,10 @@ header {
   grid-template-columns: 60px 28px 60px;
   grid-template-rows:    60px 28px 60px;
   pointer-events: none;
+  justify-items: center;
+  align-items: center;
 }
+
 .ctrl-up    { grid-column: 2; grid-row: 1; }
 .ctrl-left  { grid-column: 1; grid-row: 2; }
 .ctrl-right { grid-column: 3; grid-row: 2; }
