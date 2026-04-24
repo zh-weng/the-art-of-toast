@@ -110,6 +110,7 @@ function startGame(config) {
   createLiquid(pos0, config.particles, circles0)
   createLiquid(pos1, config.particles, circles1)
 
+  if (liquidRenderer) liquidRenderer.destroy()
   liquidRenderer = new LiquidRenderer(config.color)
 
   // Player 1 controls: WASD + QE

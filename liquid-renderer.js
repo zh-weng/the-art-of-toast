@@ -122,6 +122,10 @@ export class LiquidRenderer {
     gl.uniform2f(this.uResolution, innerWidth, innerHeight)
   }
 
+  destroy() {
+    this.gl.getExtension('WEBGL_lose_context')?.loseContext()
+  }
+
   // circles0 and circles1 are Matter.js Body arrays
   render(circles0, circles1) {
     const { gl } = this
