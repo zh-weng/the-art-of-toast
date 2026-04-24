@@ -1,12 +1,14 @@
 import {Bodies, Body, Bounds, Composite, Engine, Events, Mouse, Render, Runner} from 'matter-js'
 import {Glass, DIFFICULTY_CONFIGS} from './glass.js'
 import {bindKey, unbindKey} from '@rwh/keystrokes'
+import {LiquidRenderer} from './liquid-renderer.js'
 
 const canvas = document.querySelector('#matter-canvas')
 
 let engine, render, runner, mouse
 let circles0 = [], circles1 = []
 let glass0, glass1
+let liquidRenderer
 let gameOver = false
 
 function init() {
@@ -108,6 +110,8 @@ function startGame(config) {
   createLiquid(pos0, config.particles, circles0)
   createLiquid(pos1, config.particles, circles1)
 
+  liquidRenderer = new LiquidRenderer(config.color)
+
   // Player 1 controls: WASD + QE
   bindKey('a', {onPressed: () => glass0.control.left  = true,  onReleased: () => glass0.control.left  = false})
   bindKey('d', {onPressed: () => glass0.control.right = true,  onReleased: () => glass0.control.right = false})
@@ -159,6 +163,7 @@ function startGame(config) {
 
     glass0.updatePosition()
     glass1.updatePosition()
+    liquidRenderer.render(circles0, circles1)
   })
 }
 
@@ -175,6 +180,7 @@ window.addEventListener('resize', () => {
     render.canvas.width  = innerWidth
     render.canvas.height = innerHeight
   }
+  if (liquidRenderer) liquidRenderer.resize()
   // Reposition glass images to match new viewport size (fixes resize alignment bug)
   if (glass0) glass0.setPosition(glass0.getPosition())
   if (glass1) glass1.setPosition(glass1.getPosition())

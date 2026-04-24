@@ -3,9 +3,9 @@ import {Bodies, Body, Composite} from 'matter-js'
 // Difficulty configs: wallAngleDeg controls how splayed the cup walls are (harder = more splayed),
 // particles controls how much liquid each cup starts with.
 export const DIFFICULTY_CONFIGS = {
-  easy:   { wallAngleDeg: 8,  particles: 120 },
-  normal: { wallAngleDeg: 15, particles: 100 },
-  hard:   { wallAngleDeg: 22, particles: 80  },
+  easy:   { wallAngleDeg: 8,  particles: 120, color: [240/255, 180/255,  40/255, 0.85] },
+  normal: { wallAngleDeg: 15, particles: 100, color: [120/255,  20/255,  40/255, 0.85] },
+  hard:   { wallAngleDeg: 22, particles: 80,  color: [220/255, 235/255, 255/255, 0.75] },
 }
 
 // Fixed cup geometry constants (match the original cup image proportions)
