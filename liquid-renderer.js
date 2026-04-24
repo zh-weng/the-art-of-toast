@@ -10,7 +10,7 @@ const VERT_SRC = `
 const MAX_PARTICLES = 256
 
 const FRAG_SRC = `
-  precision mediump float;
+  precision highp float;
   uniform vec2  uParticles[${MAX_PARTICLES}];
   uniform int   uCount;
   uniform float uRadius;
@@ -104,9 +104,14 @@ export class LiquidRenderer {
     this.uThreshold  = gl.getUniformLocation(prog, 'uThreshold')
     this.uColor      = gl.getUniformLocation(prog, 'uColor')
 
-    // Safari requires half-resolution rendering to maintain acceptable frame rate;
-    // other browsers run WebGL at full speed and don't need the downscale.
-    this._renderScale = /^((?!chrome|android).)*safari/i.test(navigator.userAgent) ? 0.5 : 1.0
+    // Apple GPU composits WebGL canvases through the CPU, severely degrading frame rate.
+    // Check WEBGL_debug_renderer_info for an Apple renderer string first;
+    // fall back to UA-based Safari detection when the extension isn't available.
+    // (iOS Chrome/CriOS uses the same WebKit stack and benefits from half-res too.)
+    const debugInfo = gl.getExtension('WEBGL_debug_renderer_info')
+    const renderer  = debugInfo ? gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) : ''
+    const isSafari  = /apple/i.test(renderer) || /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
+    this._renderScale = isSafari ? 0.5 : 1.0
 
     gl.uniform1f(this.uRadius,    4.5 * this._renderScale)
     gl.uniform1f(this.uThreshold, 0.8)

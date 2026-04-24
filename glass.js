@@ -1,7 +1,12 @@
 import {Bodies, Body, Composite} from 'matter-js'
 
-// Difficulty configs: wallAngleDeg controls how splayed the cup walls are (harder = more splayed),
-// particles controls how much liquid each cup starts with.
+// Difficulty configs:
+// wallAngleDeg: how splayed the cup walls are (higher = harder)
+// particles:    how much liquid each cup starts with
+// color:        [r, g, b, a] in 0–1 range. Alpha is lower than the original spec (0.85→0.55)
+//               because the half-resolution WebGL rendering on Safari concentrates the
+//               metaball field, making lower alpha values visually equivalent to the
+//               original gooey effect.
 export const DIFFICULTY_CONFIGS = {
   easy:   { wallAngleDeg: 8,  particles: 120, color: [240/255, 180/255,  40/255, 0.55] },
   normal: { wallAngleDeg: 15, particles: 100, color: [120/255,  20/255,  40/255, 0.55] },

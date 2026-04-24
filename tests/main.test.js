@@ -1,5 +1,5 @@
 import {vi, describe, it, expect, beforeEach} from 'vitest'
-import {Body, Composite, Engine, Render, Runner} from 'matter-js'
+import {Body, Composite, Engine} from 'matter-js'
 import {Glass, DIFFICULTY_CONFIGS} from '../glass.js'
 import {LiquidRenderer} from '../liquid-renderer.js'
 
