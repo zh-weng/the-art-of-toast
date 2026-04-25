@@ -1,13 +1,23 @@
 html, body {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   width: 100%;
   height: 100%;
   overflow: hidden;
   background-color: #c3e6e4;
   position: relative;
-  z-index: 1;
+}
+
+/* Game root: full screen in landscape; rotated 90° counter-clockwise in portrait
+   so phone-top → game-left (P1), phone-bottom → game-right (P2),
+   phone-left-edge → game-bottom (gravity direction).
+   display:flex + center alignment replicates the original body flex behavior that
+   the position:absolute glass images relied on for their centering reference. */
+#game-root {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
 
 header {
@@ -40,11 +50,14 @@ header {
 
 #carton, .glass {
   position: absolute;
+  top: 0;
+  left: 0;
   pointer-events: none;
   z-index: 0;
 }
 
 .glass {
+  display: none;  /* shown by Glass constructor when game starts */
   width: 250px;
 }
 
@@ -235,7 +248,48 @@ header {
 }
 
 @media (orientation: portrait) {
-  #rotate-prompt { display: flex; }
+  /* Rotate the whole game 90° (clockwise):
+     phone-top (short edge) → game-left → P1
+     phone-bottom (short edge) → game-right → P2
+     phone-left long edge → game-bottom → gravity direction  */
+  #game-root {
+    width: 100vh;
+    height: 100vw;
+    top: calc((100vh - 100vw) / 2);
+    left: calc((100vw - 100vh) / 2);
+    transform: rotate(90deg);
+  }
+
+  /* Re-orient controls for players physically located at the top and bottom of the device */
+  .ctrl-strip {
+    flex-direction: column-reverse; /* Puts D-pad on player's left, spin buttons on right */
+  }
+  
+  #ctrl-p1 {
+    transform: none; /* Remove landscape 180deg flip */
+  }
+  #ctrl-p1 .ctrl-group {
+    flex-direction: row-reverse; /* Puts 'up' forward (away from P1) */
+  }
+  #ctrl-p1 .ctrl-row {
+    flex-direction: column-reverse; /* L/R layout */
+  }
+  #ctrl-p1 .ctrl-btn {
+    transform: rotate(90deg); /* Makes text upright for P1 */
+  }
+
+  #ctrl-p2 {
+    transform: none; 
+  }
+  #ctrl-p2 .ctrl-group {
+    flex-direction: row; /* Puts 'up' forward (away from P2) */
+  }
+  #ctrl-p2 .ctrl-row {
+    flex-direction: column-reverse; /* L/R layout */
+  }
+  #ctrl-p2 .ctrl-btn {
+    transform: rotate(-90deg); /* Makes text upright for P2 */
+  }
 }
 
 /* ── Touch controls ───────────────────────────────── */

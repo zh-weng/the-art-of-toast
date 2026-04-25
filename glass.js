@@ -19,6 +19,7 @@ export class Glass {
   constructor(pos, engine, img, mirrored = false, config = DIFFICULTY_CONFIGS.normal) {
     const wallColor = '#00000000'
     this.glassImg = img
+    this.glassImg.style.display = 'block'  // hidden by default in CSS, show now
     this.cx = pos.x
     this.cy = pos.y
     this.mirrored = mirrored
@@ -76,12 +77,32 @@ export class Glass {
     )
   }
 
-  // Builds the CSS transform string. Uses live innerWidth/innerHeight so resize works correctly.
+  // Builds the CSS transform string.
+  // The .glass images are positioned in the VIEWPORT (outside #game-root),
+  // but comX/comY are in game-logical coordinates (inside the rotated game-root).
+  // In portrait, game-root is rotate(-90deg), so the coordinate mapping is:
+  //   game (gx, gy)  →  viewport (innerWidth - gy, gx)
+  // In landscape there is no rotation, so viewport = game directly.
   _makeTransform = (comX, comY, angleDeg) => {
-    const tx = comX - innerWidth / 2
-    const ty = comY - innerHeight / 2
+    const hw = (this.glassImg.offsetWidth  || 250) / 2
+    const hh = (this.glassImg.offsetHeight || 200) / 2
+    const portrait = window.matchMedia('(orientation: portrait)').matches
+
+    let vpX, vpY
+    if (portrait) {
+      vpX = window.innerWidth - comY   // game y → viewport x (flipped)
+      vpY = comX                       // game x → viewport y
+    } else {
+      vpX = comX
+      vpY = comY
+    }
+
+    const tx = vpX - hw
+    const ty = vpY - hh
+    // In portrait the cup image needs +90° to match game-root's +90° rotation.
+    const baseAngle = portrait ? 90 : 0
     const mirror = this.mirrored ? ' scaleX(-1)' : ''
-    return `translate(${tx}px, ${ty}px) rotate(${angleDeg}deg) translate(${this.xCorrection}px, -25px)${mirror}`
+    return `translate(${tx}px, ${ty}px) rotate(${angleDeg + baseAngle}deg) translate(${this.xCorrection}px, -25px)${mirror}`
   }
 
   setPosition = pos => {
@@ -106,15 +127,39 @@ export class Glass {
   updatePosition = () => {
     let pos = this.getPosition()
     const angle = this.glass.angle
-    if (this.control.right) pos.x += 5
-    if (this.control.left)  pos.x -= 5
-    if (this.control.up)    pos.y -= 5
-    if (this.control.down)  pos.y += 5
+    const portrait = window.matchMedia('(orientation: portrait)').matches
+
+    let moveRight = this.control.right
+    let moveLeft  = this.control.left
+    let moveUp    = this.control.up
+    let moveDown  = this.control.down
+
+    // In portrait mode, users view the rotated screen from the physical top and bottom edges.
+    // The directional controls must be remapped to maintain an intuitive physical mapping.
+    if (portrait) {
+      if (!this.mirrored) { // P1 (Top edge)
+        moveRight = this.control.up    // physical Forward -> Game +X
+        moveLeft  = this.control.down  // physical Backward -> Game -X
+        moveUp    = this.control.left  // physical Left -> Game -Y
+        moveDown  = this.control.right // physical Right -> Game +Y
+      } else { // P2 (Bottom edge)
+        moveRight = this.control.down  // physical Backward -> Game +X
+        moveLeft  = this.control.up    // physical Forward -> Game -X
+        moveUp    = this.control.right // physical Right -> Game -Y
+        moveDown  = this.control.left  // physical Left -> Game +Y
+      }
+    }
+
+    if (moveRight) pos.x += 5
+    if (moveLeft)  pos.x -= 5
+    if (moveUp)    pos.y -= 5
+    if (moveDown)  pos.y += 5
     if (this.control.clockwise)        this.setAngle(angle + 0.02)
     if (this.control.counterClockwise) this.setAngle(angle - 0.02)
+    const canvas = document.querySelector('#matter-canvas')
     this.setPosition({
-      x: Math.min(Math.max(pos.x, 0), innerWidth),
-      y: Math.min(Math.max(pos.y, 0), innerHeight - 20)
+      x: Math.min(Math.max(pos.x, 0), canvas.width),
+      y: Math.min(Math.max(pos.y, 0), canvas.height - 20)
     })
   }
 }

@@ -30,6 +30,7 @@ let liquidRenderer
 let gameOver = false
 
 function init() {
+  const { w, h } = getLogicalSize()
   engine = Engine.create({
     constraintIterations: 10,
     positionIterations: 10
@@ -38,8 +39,8 @@ function init() {
     canvas: canvas,
     engine: engine,
     options: {
-      width: innerWidth,
-      height: innerHeight,
+      width: w,
+      height: h,
       wireframes: false,
       background: 'transparent',
       pixelRatio: 1
@@ -115,10 +116,11 @@ function startGame(config) {
   init()
 
   const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0
+  const { w, h } = getLogicalSize()
   // On touch devices, cups start at 50% height to avoid being hidden under control strips
-  const x0 = innerWidth  * 0.3
-  const x1 = innerWidth  * 0.7
-  const y  = isTouch ? innerHeight * 0.5 : innerHeight * 0.8
+  const x0 = w * 0.3
+  const x1 = w * 0.7
+  const y  = isTouch ? h * 0.5 : h * 0.8
   const pos0 = {x: x0, y}
   const pos1 = {x: x1, y}
 
@@ -153,9 +155,10 @@ function startGame(config) {
     if (gameOver) return
 
     // Remove particles that have fallen off the bottom of the canvas
+    const { h: lh } = getLogicalSize()
     for (const circles of [circles0, circles1]) {
       for (let i = circles.length - 1; i >= 0; i--) {
-        if (circles[i].position.y - circles[i].circleRadius > innerHeight) {
+        if (circles[i].position.y - circles[i].circleRadius > lh) {
           Composite.remove(engine.world, circles[i])
           circles.splice(i, 1)
         }
@@ -195,12 +198,25 @@ document.querySelectorAll('.diff-btn').forEach(btn => {
 })
 
 window.addEventListener('resize', () => {
+  const { w, h } = getLogicalSize()
   if (render) {
-    render.canvas.width  = innerWidth
-    render.canvas.height = innerHeight
+    render.canvas.width  = w
+    render.canvas.height = h
   }
   if (liquidRenderer) liquidRenderer.resize()
   // Reposition glass images to match new viewport size (fixes resize alignment bug)
+  if (glass0) glass0.setPosition(glass0.getPosition())
+  if (glass1) glass1.setPosition(glass1.getPosition())
+})
+
+// Also re-layout when orientation changes (phone rotation lock may still fire this)
+window.addEventListener('orientationchange', () => {
+  const { w, h } = getLogicalSize()
+  if (render) {
+    render.canvas.width  = w
+    render.canvas.height = h
+  }
+  if (liquidRenderer) liquidRenderer.resize()
   if (glass0) glass0.setPosition(glass0.getPosition())
   if (glass1) glass1.setPosition(glass1.getPosition())
 })
@@ -228,4 +244,14 @@ function setupTouchControls() {
 
 function randomNumBetween(min, max) {
   return Math.random() * (max - min) + min
+}
+
+// Returns the logical game dimensions, swapped in portrait mode because
+// the #game-root is rotated -90°: the game's coordinate space uses
+// (landscape) dimensions regardless of the physical screen orientation.
+function getLogicalSize() {
+  const portrait = window.matchMedia('(orientation: portrait)').matches
+  return portrait
+    ? { w: window.innerHeight, h: window.innerWidth }
+    : { w: window.innerWidth,  h: window.innerHeight }
 }
