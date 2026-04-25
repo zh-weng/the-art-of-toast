@@ -8,8 +8,36 @@ const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>', {
 
 globalThis.window = dom.window
 globalThis.document = dom.window.document
-globalThis.innerWidth = dom.window.innerWidth = 800
-globalThis.innerHeight = dom.window.innerHeight = 600
+Object.defineProperty(globalThis, 'innerWidth', {
+  get: () => dom.window.innerWidth,
+  set: (v) => { dom.window.innerWidth = v },
+  configurable: true
+})
+Object.defineProperty(globalThis, 'innerHeight', {
+  get: () => dom.window.innerHeight,
+  set: (v) => { dom.window.innerHeight = v },
+  configurable: true
+})
+globalThis.innerWidth = 800
+globalThis.innerHeight = 600
+
+globalThis.window.matchMedia = (query) => {
+  const isPortrait = query.includes('portrait')
+  return {
+    get matches() {
+      const portrait = dom.window.innerHeight > dom.window.innerWidth
+      return isPortrait ? portrait : !portrait
+    },
+    media: query,
+    onchange: null,
+    addListener: () => {},
+    removeListener: () => {},
+    addEventListener: () => {},
+    removeEventListener: () => {},
+    dispatchEvent: () => {},
+  }
+}
+
 Object.defineProperty(globalThis, 'navigator', {value: dom.window.navigator, configurable: true})
 globalThis.HTMLCanvasElement = dom.window.HTMLCanvasElement
 

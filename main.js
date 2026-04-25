@@ -122,6 +122,7 @@ export function startGame(config) {
   circles1 = []
 
   clear()
+  init()
 
   const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0
   const { w, h } = getLogicalSize()
