@@ -126,8 +126,12 @@ export class LiquidRenderer {
   resize() {
     const { gl, canvas } = this
     const scale = this._renderScale
-    canvas.width  = Math.round(innerWidth  * scale)
-    canvas.height = Math.round(innerHeight * scale)
+    // In portrait mode the game is rotated -90°, so logical width = innerHeight
+    const portrait = window.matchMedia('(orientation: portrait)').matches
+    const lw = portrait ? window.innerHeight : window.innerWidth
+    const lh = portrait ? window.innerWidth  : window.innerHeight
+    canvas.width  = Math.round(lw * scale)
+    canvas.height = Math.round(lh * scale)
     gl.viewport(0, 0, canvas.width, canvas.height)
     gl.uniform2f(this.uResolution, canvas.width, canvas.height)
   }
