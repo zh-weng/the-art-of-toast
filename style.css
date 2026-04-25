@@ -248,13 +248,7 @@ header {
      phone-top (short edge) → game-left → P1
      phone-bottom (short edge) → game-right → P2
      phone-left long edge → game-bottom → gravity direction  */
-  #game-root {
-    width: 100vh;
-    height: 100vw;
-    top: calc((100vh - 100vw) / 2);
-    left: calc((100vw - 100vh) / 2);
-    transform: rotate(90deg);
-  }
+
 
   /* Re-orient controls for players physically located at the top and bottom of the device */
   .ctrl-strip {

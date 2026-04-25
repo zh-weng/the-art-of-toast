@@ -205,7 +205,30 @@ document.querySelectorAll('.diff-btn').forEach(btn => {
   })
 })
 
+export function updateGameRootSize() {
+  const root = document.getElementById('game-root')
+  const portrait = window.matchMedia('(orientation: portrait)').matches
+  if (portrait) {
+    const w = window.innerWidth
+    const h = window.innerHeight
+    root.style.width = h + 'px'
+    root.style.height = w + 'px'
+    root.style.top = ((h - w) / 2) + 'px'
+    root.style.left = ((w - h) / 2) + 'px'
+    root.style.transform = 'rotate(90deg)'
+  } else {
+    root.style.width = '100%'
+    root.style.height = '100%'
+    root.style.top = '0'
+    root.style.left = '0'
+    root.style.transform = 'none'
+  }
+}
+
+updateGameRootSize()
+
 window.addEventListener('resize', () => {
+  updateGameRootSize()
   const { w, h } = getLogicalSize()
   if (render) {
     render.canvas.width  = w
@@ -219,6 +242,7 @@ window.addEventListener('resize', () => {
 
 // Also re-layout when orientation changes (phone rotation lock may still fire this)
 window.addEventListener('orientationchange', () => {
+  updateGameRootSize()
   const { w, h } = getLogicalSize()
   if (render) {
     render.canvas.width  = w
