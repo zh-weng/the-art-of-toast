@@ -27,11 +27,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: yarn
+          cache: npm
 
-      - run: yarn install
+      - run: npm ci
 
-      - run: yarn build
+      - run: npm run build
 
       - uses: actions/upload-pages-artifact@v3
         with:
